@@ -2,6 +2,7 @@
 #define thriar_hpp
 
 #include <stdio.h>
+#include <functional>
 
 using namespace std;
 
@@ -32,9 +33,14 @@ private:
     
     thriar_node<T>* clone_node(thriar_node<T>* node_to_clone);
     
+    static void parse_tree(string s, thriar_node<T>* current_node, T (*from_str_function)(string));
+    static long int find_last_closing_index(string s);
+    
 public:
     thriar(int (*_allocation_function)(T,T));
     thriar(int (*_allocation_function)(T,T), string s, T (*from_str_function)(string));
+    thriar(const thriar<T> & rhs);
+    ~thriar();
     
     void add_element(T data);
     void remove_element(T data);
@@ -42,12 +48,15 @@ public:
     bool has_element(T data);
     bool has_subtree(thriar<T> subtree);
     
-    string convert_to_string();
+    string convert_to_string(string (*to_str_function)(T));
     
     thriar<T> copy_tree();
     thriar<T> create_subtree(T data);
-    thriar<T> where(bool (*where_function)(T));
-    template <typename U> thriar<U> map(int (*_allocation_function)(U,U), U (*map_function)(T));
+    thriar<T> where(function<bool(T)>where_function);
+    thriar<T> merge(thriar<T> tree);
+    template <typename U> thriar<U> map(int (*_allocation_function)(U,U), function<U(T)>map_function);
+    
+    thriar<T> operator=(const thriar<T> & rhs);
 };
 
 #include "thriar.cpp"
